@@ -1,0 +1,57 @@
+version: '3.9'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ../docker/Dockerfile
+    container_name: app
+    volumes:
+      - ..:/var/www
+      - php-fpm:/var/run
+    environment:
+      APP_ENV: dev
+      APP_DEBUG: 1
+      APP_SECRET: d6c6cb28df2a4378ea490fdfcbb8625c
+      FPM_PM_MAX_CHILDREN: 3
+      WORKER_MAX_REQUESTS: 10
+    command: >
+      sh -c "cp /var/www/docker/php.ini /usr/local/etc/php/php.ini \
+      && cp /var/www/docker/zz-docker.conf /usr/local/etc/php-fpm.d/zz-docker.conf \
+      && php-fpm"
+  db:
+    image: postgres:${POSTGRES_VERSION:-14}-alpine
+    container_name: database
+    environment:
+      POSTGRES_DB: dataraw
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: qwk3Dced3k
+    #healthcheck:
+    #  test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} $${POSTGRES_DB}"]
+    #  interval: 10s
+    #  timeout: 5s
+    #  retries: 5
+    volumes:
+      - db-data:/var/lib/postgresql/data:rw
+      #- ./docker/db/data:/var/lib/postgresql/data:rw # if you need to keep data in your local and avoid to lose them
+    #restart: always
+    ports:
+      - "5432:5432"
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    volumes:
+      - ..:/var/www
+      - php-fpm:/var/run
+    ports:
+      - "8080:80"
+    depends_on:
+      - app
+    environment:
+      WORKER_MAX_REQUESTS: 10
+    command: >
+      sh -c "envsubst '$${WORKER_MAX_REQUESTS}' < /var/www/docker/nginx.conf > /etc/nginx/nginx.conf && exec nginx"
+
+volumes:
+  php-fpm:
+  db-data:
