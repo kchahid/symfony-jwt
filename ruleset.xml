@@ -1,0 +1,344 @@
+<?xml version="1.0"?>
+<ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="./vendor/squizlabs/php_codesniffer/phpcs.xsd">
+    <config name="installed_paths" value="vendor/slevomat/coding-standard/"/>
+    <exclude-pattern>src/Kernel.php</exclude-pattern>
+    <exclude-pattern>vendor/*</exclude-pattern>
+    <arg name="extensions" value="php" />
+
+    <description>coding standard</description>
+    <rule ref="PSR12"/>
+
+    <!-- Overriding PSR rules -->
+    <rule ref="Generic.Files.LineLength">
+        <properties>
+            <property name="lineLimit" value="200"/>
+            <property name="absoluteLineLimit" value="0"/>
+        </properties>
+    </rule>
+
+    <rule ref="Generic.Formatting.SpaceAfterCast"/>
+
+    <!-- FUNCTIONAL -->
+
+    <!-- Checks for missing return typehints in case they can be declared natively. If the phpDoc contains something that can be written as a native PHP 7.0+ typehint, this sniff reports that.
+Checks for useless @return annotations -->
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint"/>
+
+    <!-- Enforces having exactly "declare(strict_types=1)" 1 blank line after <?php on each PHP file -->
+    <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
+        <properties>
+            <property name="linesCountBeforeDeclare" value="1"/>
+            <property name="spacesCountAroundEqualsSign" value="0"/>
+        </properties>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Arrays.DisallowImplicitArrayCreation"/>
+
+    <!-- Checks that class/trait/interface members are in the correct order - TODO uncomment on future merge
+    <rule ref="SlevomatCodingStandard.Classes.ClassStructure">
+        <properties>
+            <property name="groups" type="array">
+                <element value="uses"/>
+
+                <element value="private constants"/>
+                <element value="protected constants"/>
+                <element value="public constants"/>
+
+                <element value="private static properties"/>
+                <element value="protected static properties"/>
+                <element value="public static properties"/>
+
+                <element value="private properties"/>
+                <element value="protected properties"/>
+                <element value="public properties"/>
+
+                <element value="constructor"/>
+                <element value="magic methods"/>
+
+                <element value="private static methods"/>
+                <element value="protected static methods"/>
+                <element value="public static methods"/>
+
+                <element value="all private methods"/>
+                <element value="all protected methods"/>
+                <element value="all public methods"/>
+                <element value="methods"/>
+            </property>
+        </properties>
+    </rule> -->
+
+    <rule ref="SlevomatCodingStandard.Classes.DisallowLateStaticBindingForConstants"/>
+
+    <!-- Requires use of null coalesce equal operator when possible ?? -->
+    <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceEqualOperator"/>
+
+    <!-- Some functions have $strict parameter. This sniff reports calls to these functions without the parameter or with $strict = false -->
+    <rule ref="SlevomatCodingStandard.Functions.StrictCall"/>
+
+    <!-- Disallows long functions -->
+    <rule ref="SlevomatCodingStandard.Functions.FunctionLength">
+        <properties>
+            <property name="includeComments" value="false"/>
+            <property name="includeWhitespace" value="false"/>
+            <property name="maxLinesLength" value="298"/>
+        </properties>
+        <severity>0</severity>
+    </rule>
+
+    <!-- Disallows using loose == and != comparison operators. Use === and !== instead -->
+    <rule ref="SlevomatCodingStandard.Operators.DisallowEqualOperators"/>
+
+    <!-- Requires using combined assignment operators, eg +=, .= etc -->
+    <rule ref="SlevomatCodingStandard.Operators.RequireCombinedAssignmentOperator"/>
+
+
+    <!-- CLEANING -->
+
+
+    <!-- Looks for unused inherited variables passed to closure via use -->
+    <rule ref="SlevomatCodingStandard.Functions.UnusedInheritedVariablePassedToClosure"/>
+
+    <!-- Looks for unused parameters ? -->
+    <rule ref="SlevomatCodingStandard.Functions.UnusedParameter">
+        <severity>0</severity>
+    </rule>
+
+    <!-- Looks for useless parameter default value -->
+    <rule ref="SlevomatCodingStandard.Functions.UselessParameterDefaultValue"/>
+
+    <!-- Prohibits uses from the same namespace: namespace Foo; use Foo\Bar; -->
+    <rule ref="SlevomatCodingStandard.Namespaces.UseFromSameNamespace"/>
+
+    <!-- Looks for use alias that is same as unqualified name -->
+    <rule ref="SlevomatCodingStandard.Namespaces.UselessAlias"/>
+
+    <!-- Looks for useless semicolons -->
+    <rule ref="SlevomatCodingStandard.PHP.UselessSemicolon"/>
+
+    <rule ref="SlevomatCodingStandard.Variables.DisallowSuperGlobalVariable"/>
+    <rule ref="SlevomatCodingStandard.Variables.DuplicateAssignmentToVariable"/>
+    <rule ref="SlevomatCodingStandard.Variables.UnusedVariable"/>
+    <rule ref="SlevomatCodingStandard.Variables.UselessVariable"/>
+
+    <!-- This sniff finds unreachable catch blocks:
+    try {
+        doStuff();
+    } catch (\Throwable $e) {
+        log($e);
+    } catch (\InvalidArgumentException $e) {
+        // unreachable!
+    }
+    -->
+    <rule ref="SlevomatCodingStandard.Exceptions.DeadCatch"/>
+
+
+    <!-- FORMATTING -->
+
+
+    <!-- Enforces reasonable end bracket placement for multi-line arrays -->
+    <rule ref="SlevomatCodingStandard.Arrays.MultiLineArrayEndBracketPlacement"/>
+
+    <!-- 0 space before / after brackets -->
+    <rule ref="SlevomatCodingStandard.Arrays.SingleLineArrayWhitespace">
+        <properties>
+            <property name="spacesAroundBrackets" value="0"/>
+        </properties>
+    </rule>
+
+    <!-- Checks lines count between different class members, eg. between last property and first method (1) -->
+    <rule ref="SlevomatCodingStandard.Classes.ClassMemberSpacing">
+        <properties>
+            <property name="linesCountBetweenMembers" value="1"/>
+        </properties>
+    </rule>
+
+    <!-- Checks that there is a certain number of blank lines between constants -->
+    <rule ref="SlevomatCodingStandard.Classes.ConstantSpacing">
+        <properties>
+            <property name="minLinesCountBeforeWithComment" value="1"/>
+            <property name="maxLinesCountBeforeWithComment" value="1"/>
+            <property name="minLinesCountBeforeWithoutComment" value="0"/>
+            <property name="maxLinesCountBeforeWithoutComment" value="0"/>
+        </properties>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.Classes.DisallowMultiPropertyDefinition"/>
+
+    <!-- Checks that there is 1 blank line between methods -->
+    <rule ref="SlevomatCodingStandard.Classes.MethodSpacing">
+        <properties>
+            <property name="minLinesCount" value="1"/>
+            <property name="maxLinesCount" value="1"/>
+        </properties>
+    </rule>
+
+    <!-- Enforces configurable number of lines around parent method call -->
+    <rule ref="SlevomatCodingStandard.Classes.ParentCallSpacing">
+        <properties>
+            <property name="linesCountBefore" value="1"/>
+            <property name="linesCountBeforeFirst" value="0"/>
+            <property name="linesCountAfter" value="1"/>
+            <property name="linesCountAfterLast" value="0"/>
+        </properties>
+    </rule>
+
+    <!-- Checks that there is a certain number of blank lines between properties -->
+    <rule ref="SlevomatCodingStandard.Classes.PropertySpacing">
+        <properties>
+            <property name="minLinesCountBeforeWithComment" value="1"/>
+            <property name="maxLinesCountBeforeWithComment" value="1"/>
+            <property name="minLinesCountBeforeWithoutComment" value="0"/>
+            <property name="maxLinesCountBeforeWithoutComment" value="0"/>
+        </properties>
+    </rule>
+
+    <!-- Prohibits multiple traits separated by commas in one use statement -->
+    <rule ref="SlevomatCodingStandard.Classes.TraitUseDeclaration"/>
+
+    <!-- Enforces configurable number of lines before first use, after last use and between two use statements -->
+    <rule ref="SlevomatCodingStandard.Classes.TraitUseSpacing">
+        <properties>
+            <property name="linesCountBeforeFirstUse" value="0"/>
+            <property name="linesCountBeforeFirstUseWhenFirstInClass" value="0"/>
+            <property name="linesCountBetweenUses" value="0"/>
+            <property name="linesCountAfterLastUse" value="1"/>
+            <property name="linesCountAfterLastUseWhenLastInClass" value="0"/>
+        </properties>
+    </rule>
+
+    <!-- Enforces configurable number of lines around jump statements (continue, return, ...) -->
+    <rule ref="SlevomatCodingStandard.ControlStructures.JumpStatementsSpacing">
+        <properties>
+            <property name="jumpStatements" type="array">
+                <element value="break"/>
+                <element value="continue"/>
+                <element value="return"/>
+            </property>
+            <property name="linesCountBefore" value="0"/>
+            <property name="linesCountBeforeFirst" value="0"/>
+            <property name="linesCountBeforeWhenFirstInCaseOrDefault" value="0"/>
+            <property name="linesCountAfter" value="0"/>
+            <property name="linesCountAfterLast" value="0"/>
+            <property name="linesCountAfterWhenLastInCaseOrDefault" value="0"/>
+            <property name="linesCountAfterWhenLastInLastCaseOrDefault" value="0"/>
+        </properties>
+    </rule>
+
+    <!-- Disallow Yoda style null === $myVar -->
+    <rule ref="SlevomatCodingStandard.ControlStructures.DisallowYodaComparison"/>
+
+    <!-- Checks fn declaration -->
+    <rule ref="SlevomatCodingStandard.Functions.ArrowFunctionDeclaration">
+        <properties>
+            <property name="spacesCountAfterKeyword" value="0"/>
+            <property name="spacesCountBeforeArrow" value="1"/>
+            <property name="spacesCountAfterArrow" value="1"/>
+            <property name="allowMultiLine" value="false"/>
+        </properties>
+    </rule>
+
+    <!-- This sniff disallows trailing commas -->
+    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInCall"/>
+    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInClosureUse"/>
+    <rule ref="SlevomatCodingStandard.Functions.DisallowTrailingCommaInDeclaration"/>
+
+    <!-- Checks whether uses at the top of a file are alphabetically sorted -->
+    <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses">
+        <properties>
+            <property name="psr12Compatible" value="true"/>
+            <property name="caseSensitive" value="true"/>
+        </properties>
+    </rule>
+
+    <!-- Requires only one namespace in a file -->
+    <rule ref="SlevomatCodingStandard.Namespaces.RequireOneNamespaceInFile"/>
+
+    <!-- Enforces one space after namespace, disallows content between namespace name and semicolon and disallows use of bracketed syntax -->
+    <rule ref="SlevomatCodingStandard.Namespaces.NamespaceDeclaration"/>
+
+    <!-- Enforces configurable number of lines before and after namespace -->
+    <rule ref="SlevomatCodingStandard.Namespaces.NamespaceSpacing">
+        <properties>
+            <property name="linesCountBeforeNamespace" value="1"/>
+            <property name="linesCountAfterNamespace" value="1"/>
+        </properties>
+    </rule>
+
+    <!-- Enforces configurable number of lines before first use, after last use and between two different types of use (eg. between use function and use const). Also enforces zero number of lines between same types of use -->
+    <rule ref="SlevomatCodingStandard.Namespaces.UseSpacing">
+        <properties>
+            <property name="linesCountBeforeFirstUse" value="1"/>
+            <property name="linesCountBetweenUseTypes" value="1"/>
+            <property name="linesCountAfterLastUse" value="1"/>
+        </properties>
+    </rule>
+
+    <!-- Disallows numeric literal separators. Example 5_000_000_000 = 5 billion -->
+    <rule ref="SlevomatCodingStandard.Numbers.DisallowNumericLiteralSeparator"/>
+
+    <!-- Enforces using shorthand scalar typehint variants in phpDocs: int instead of integer and bool instead of boolean -->
+    <rule ref="SlevomatCodingStandard.TypeHints.LongTypeHints"/>
+
+    <!-- Enforces using short form of list syntax, [...] instead of list(...) -->
+    <rule ref="SlevomatCodingStandard.PHP.ShortList"/>
+
+    <!-- Enforces using shorthand cast operators, forbids use of unset and binary cast operators: (bool) instead of (boolean), (int) instead of (integer), (float) instead of (double) or (real). (binary) and (unset) are forbidden -->
+    <rule ref="SlevomatCodingStandard.PHP.TypeCast"/>
+
+    <!-- Report when not declare a visibility on a class constant -->
+    <rule ref="SlevomatCodingStandard.Classes.ClassConstantVisibility"/>
+
+    <!-- Enforces consistent formatting of return typehints, like this: function foo(): ?int -->
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHintSpacing"/>
+
+    <!-- Checks whether the nullablity ? symbol is present before each nullable and optional parameter (which are marked as = null):
+    function foo(
+        int $foo = null, // ? missing
+        ?int $bar = null // correct
+    ) {
+    } -->
+    <rule ref="SlevomatCodingStandard.TypeHints.NullableTypeForNullDefaultValue"/>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHintSpacing"/>
+
+    <!-- Report when ugly group use :  use FooLibrary\Bar\Baz\{ ClassA, ClassB, ClassC, ClassD as Fizbo }; -->
+    <rule ref="SlevomatCodingStandard.Namespaces.DisallowGroupUse"/>
+
+    <!-- Prohibits multiple uses separated by commas -->
+    <rule ref="SlevomatCodingStandard.Namespaces.MultipleUsesPerLine"/>
+
+    <!-- Reports @deprecated annotations without description -->
+    <rule ref="SlevomatCodingStandard.Commenting.DeprecatedAnnotationDeclaration"/>
+
+    <!-- Disallows comments after code at the same line -->
+    <rule ref="SlevomatCodingStandard.Commenting.DisallowCommentAfterCode"/>
+
+    <!-- Reports empty comments -->
+    <rule ref="SlevomatCodingStandard.Commenting.EmptyComment"/>
+
+    <!-- Checks for useless doc comments -->
+    <rule ref="SlevomatCodingStandard.Commenting.UselessFunctionDocComment"/>
+
+    <!-- Reports documentation comments containing only {@inheritDoc} -->
+    <rule ref="SlevomatCodingStandard.Commenting.UselessInheritDocComment"/>
+
+    <!-- Reports useless conditions where both branches return true or false -->
+    <rule ref="SlevomatCodingStandard.ControlStructures.UselessIfConditionWithReturn"/>
+
+    <!-- Reports useless ternary operator where both branches return true or false -->
+    <rule ref="SlevomatCodingStandard.ControlStructures.UselessTernaryOperator"/>
+
+    <!-- Force using FQDN functions -->
+    <rule ref="SlevomatCodingStandard.Namespaces.ReferenceUsedNamesOnly">
+        <properties>
+            <property name="allowFallbackGlobalFunctions" value="false"/>
+        </properties>
+    </rule>
+
+    <!-- Remove unsued import … don't do it if used in phpdoc -->
+    <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses">
+        <properties>
+            <property name="searchAnnotations" value="true"/>
+        </properties>
+    </rule>
+</ruleset>
