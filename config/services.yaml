@@ -1,5 +1,5 @@
 parameters:
-    container.dumper.inline_factories: true
+    .container.dumper.inline_factories: true
     jwt_duration: 3600
 
 services:
