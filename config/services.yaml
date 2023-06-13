@@ -16,3 +16,7 @@ services:
 
     jwt_event_subscriber:
         class: App\JWT\JsonWebToken
+        arguments:
+            $em: '@doctrine.orm.entity_manager'
+            $cache: '@cache.app'
+            $duration: '%jwt_duration%'
