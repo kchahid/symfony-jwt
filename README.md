@@ -16,6 +16,7 @@
     * [Prerequisites](#prerequisites)
     * [Run Locally](#run-locally)
     * [Deployment](#deployment)
+    * [Usage](#usage)
 - [License](#license)
 - [Contact](#contact)
 
@@ -69,10 +70,19 @@ Application will be exposed via port 8080:
 http://127.0.0.1:8080
 ```
 
+<!-- usage -->
+### Usage
+
+A collection postman is provided with the repo. See [Collection](https://github.com/kchahid/symfony-jwt/blob/master/doc/collection/symfony-jwt.postman_collection.json)
+
+A route has also been developed to help generate the JWT.
+
+![oauth token route](https://github.com/kchahid/symfony-jwt/blob/master/doc/schreenshot/oauth_token.png)
+
 <!-- License -->
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the MIT License. See [Licence](https://github.com/kchahid/symfony-jwt/blob/master/LICENSE) for more information.
 
 <!-- Contact -->
 ## Contact
