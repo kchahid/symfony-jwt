@@ -11,6 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
+use function is_string;
+
 /**
  * Class Identity
  * @package App\Entity
@@ -34,10 +36,16 @@ class Identity
     private ?string $secret = null;
 
     #[ORM\Column]
-    private ?Carbon $createdAt = null;
+    private Carbon|string|null $createdAt = null;
 
     #[ORM\Column]
     private ?bool $status = null;
+
+    #[ORM\Column(length: 20)]
+    private ?string $basicKey = null;
+
+    #[ORM\Column(length: 20)]
+    private ?string $basicSecret = null;
 
     public function getId(): ?Uuid
     {
@@ -83,14 +91,14 @@ class Identity
         return $this;
     }
 
-    public function getCreatedAt(): ?Carbon
+    public function getCreatedAt(): Carbon
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(?Carbon $createdAt): Identity
+    public function setCreatedAt(Carbon|string|null $createdAt): Identity
     {
-        $this->createdAt = $createdAt;
+        $this->createdAt = is_string($createdAt) ? Carbon::createFromTimeString($createdAt) : $createdAt;
         return $this;
     }
 
@@ -102,6 +110,28 @@ class Identity
     public function setStatus(?bool $status): Identity
     {
         $this->status = $status;
+        return $this;
+    }
+
+    public function getBasicKey(): ?string
+    {
+        return $this->basicKey;
+    }
+
+    public function setBasicKey(?string $basicKey): Identity
+    {
+        $this->basicKey = $basicKey;
+        return $this;
+    }
+
+    public function getBasicSecret(): ?string
+    {
+        return $this->basicSecret;
+    }
+
+    public function setBasicSecret(?string $basicSecret): Identity
+    {
+        $this->basicSecret = $basicSecret;
         return $this;
     }
 }

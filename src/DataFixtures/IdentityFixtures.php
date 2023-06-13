@@ -17,12 +17,17 @@ use Doctrine\Persistence\ObjectManager;
  */
 class IdentityFixtures extends Fixture
 {
+    /*
+     * run: php bin/console doctrine:fixtures:load
+     */
     public function load(ObjectManager $manager): void
     {
         $identity = new Identity();
         $identity
             ->setIssuer('test')
             ->setAllowedEnv(['dev'])
+            ->setBasicKey('D873UHiwucjkdneu8cni')
+            ->setBasicSecret('093HDJJCH88')
             ->setSecret('e50280f9f89484b79afbc10308a17281')
             ->setCreatedAt(Carbon::now())
             ->setStatus(true);
