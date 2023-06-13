@@ -7,6 +7,7 @@
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![GitHub last commit](https://img.shields.io/github/last-commit/kchahid/symfony-docker)
 ![GitHub issues](https://img.shields.io/github/issues/kchahid/symfony-docker)
+[![PHPStan](https://img.shields.io/badge/PHPStan-Level%207-brightgreen.svg?style=flat&logo=php)](https://shields.io/#/)
 
 <!-- Table of Contents -->
 # Table of Contents
