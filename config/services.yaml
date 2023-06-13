@@ -1,5 +1,5 @@
 parameters:
-    container.dumper.inline_factories: true
+    .container.dumper.inline_factories: true
     jwt_duration: 3600
 
 services:
@@ -16,3 +16,7 @@ services:
 
     jwt_event_subscriber:
         class: App\JWT\JsonWebToken
+        arguments:
+            $em: '@doctrine.orm.entity_manager'
+            $cache: '@cache.app'
+            $duration: '%jwt_duration%'
