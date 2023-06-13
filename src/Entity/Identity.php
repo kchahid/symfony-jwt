@@ -29,6 +29,7 @@ class Identity
     #[ORM\Column(length: 10)]
     private ?string $issuer = null;
 
+    /** @phpstan-var array<string> */
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private array $allowedEnv = [];
 
@@ -91,7 +92,7 @@ class Identity
         return $this;
     }
 
-    public function getCreatedAt(): Carbon
+    public function getCreatedAt(): Carbon|string|null
     {
         return $this->createdAt;
     }

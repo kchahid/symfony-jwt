@@ -20,9 +20,10 @@ use Lcobucci\JWT\Validation\Validator;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use RuntimeException;
-use Symfony\Component\Cache\PruneableInterface;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
 use function sprintf;
@@ -45,7 +46,7 @@ class JsonWebToken implements LoggerAwareInterface
 
     public function __construct(
         private readonly EntityManagerInterface $em,
-        private readonly PruneableInterface $cache,
+        private readonly CacheInterface $cache,
         private readonly int $duration
     ) {
         $this->validator = new Validator();
@@ -62,40 +63,8 @@ class JsonWebToken implements LoggerAwareInterface
     */
     final public function process(RequestEvent $event): void
     {
-        $this->init($event->getRequest());
-
-        $parser = new Parser(new JoseEncoder());
-        try {
-            /** @var Plain $token */
-            $token = $parser->parse($this->authorizationHeader);
-        } catch (InvalidArgumentException | RuntimeException $e) {
-            $this->logger->notice('Invalid Jwt Token provided');
-            $this->logger->debug(sprintf('end with error: %s', $e->getMessage()));
-            throw new JsonWebTokenException(JsonWebTokenException::JWT);
-        }
-
-        $this->subjectGuard($token);
-        $identity = $this->getIdentityByIssuer($token->claims()->get('iss', null), $this->logger);
-
-        try {
-            $this->validator->assert($token, new SignedWith(new Sha256(), InMemory::plainText($identity->getSecret())));
-            $this->validator->assert($token, new IsExpired($this->duration));
-        } catch (RequiredConstraintsViolated $exception) {
-            $this->logger->info(sprintf('Identity verification failed (%s)', $identity->getIssuer()));
-            $this->logger->notice($exception->getMessage());
-            throw new JsonWebTokenException(JsonWebTokenException::JWT, $exception);
-        }
-
-        if ($token->claims()->has('jti')) {
-            $this->jtiGuard();
-        }
-        $this->logger->info(sprintf('Identity verified (%s)', $token->claims()->get('iss')));
-    }
-
-    private function init(Request $request): void
-    {
-        $this->request = $request;
-        $this->authorizationHeader = $this->request->headers->get('authorization');
+        $this->request = $event->getRequest();
+        $this->authorizationHeader = $this->request->headers->get('authorization', '');
 
         if (empty($this->authorizationHeader)) {
             $this->logger->notice('Authorization header is missing');
@@ -110,6 +79,33 @@ class JsonWebToken implements LoggerAwareInterface
             $this->logger->info('Token is missing.');
             throw new JsonWebTokenException(JsonWebTokenException::JWT);
         }
+
+        $parser = new Parser(new JoseEncoder());
+        try {
+            /** @var Plain $token */
+            $token = $parser->parse($this->authorizationHeader);
+        } catch (InvalidArgumentException | RuntimeException $e) {
+            $this->logger->notice('Invalid Jwt Token provided');
+            $this->logger->debug(sprintf('end with error: %s', $e->getMessage()));
+            throw new JsonWebTokenException(JsonWebTokenException::JWT);
+        }
+
+        $this->subjectGuard($token);
+        $identity = $this->getIdentityByIssuer($token->claims()->get('iss', null), $this->em, $this->logger);
+
+        try {
+            /** @phpstan-var non-empty-string $secret */
+            $secret = $identity->getSecret();
+            $this->validator->assert($token, new SignedWith(new Sha256(), InMemory::plainText($secret)));
+            $this->validator->assert($token, new IsExpired($this->duration));
+        } catch (RequiredConstraintsViolated $exception) {
+            $this->logger->info(sprintf('Identity verification failed (%s)', $identity->getIssuer()));
+            $this->logger->notice($exception->getMessage());
+            throw new JsonWebTokenException(JsonWebTokenException::JWT, $exception);
+        }
+
+        $this->jtiGuard($token);
+        $this->logger->info(sprintf('Identity verified (%s)', $token->claims()->get('iss')));
     }
 
     private function subjectGuard(Plain $token): void
@@ -128,18 +124,23 @@ class JsonWebToken implements LoggerAwareInterface
         }
     }
 
-    private function jtiGuard(): void
+    private function jtiGuard(Plain $token): void
     {
-        $jtiExist = true;
-        $this->cache->get($this->authorizationHeader, function (ItemInterface $item) use (&$jtiExist) {
-            $this->logger->info('JTI was provided.');
-            $item->expiresAfter($this->duration);
-            $jtiExist = false;
-            return $item->getKey();
-        }, 1.0);
+        if ($token->claims()->has('jti')) {
+            /** @var FilesystemAdapter $cache */
+            $cache = $this->cache;
+            $jtiExist = true;
 
-        if ($jtiExist === true) {
-            throw new JsonWebTokenException(JsonWebTokenException::JTI);
+            $cache->get($this->authorizationHeader, function (ItemInterface $item) use (&$jtiExist) {
+                $this->logger->info('JTI was provided.');
+                $item->expiresAfter($this->duration);
+                $jtiExist = false;
+                return $item->getKey();
+            }, 1.0);
+
+            if ($jtiExist === true) {
+                throw new JsonWebTokenException(JsonWebTokenException::JTI);
+            }
         }
     }
 }

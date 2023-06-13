@@ -26,23 +26,29 @@ class OauthTokenController extends AbstractController implements TokenAuthentica
     #[Route(path: 'oauth/token', name: 'jwt_token_generation', methods: ['POST'])]
     public function index(Request $request): JsonResponse
     {
-        /** @var Identity $identity */
-        if (($identity = $request->get('identity', null)) === null) {
+        /** @phpstan-var Identity|null $identity */
+        $identity = $request->get('identity', null);
+        if ($identity === null) {
             throw new InternalException('Identity is missing');
         }
 
-        $configuration = Configuration::forSymmetricSigner(new Sha256(), InMemory::plainText($identity->getSecret()));
+        /** @phpstan-var non-empty-string $secret */
+        $secret = $identity->getSecret();
+        $configuration = Configuration::forSymmetricSigner(new Sha256(), InMemory::plainText($secret));
+
+        /** @phpstan-var non-empty-string $issuer */
+        $issuer = $identity->getIssuer();
         $token = $configuration->builder()
             ->withHeader('alg', 'HS256')
             ->withHeader('typ', 'JWT')
             ->issuedAt(new DateTimeImmutable())
-            ->issuedBy($identity->getIssuer())
+            ->issuedBy($issuer)
             ->relatedTo($request->server->get('HTTP_HOST'));
         return new JsonResponse(
             [
                 'code' => 200,
                 'type' => 'Bearer',
-                'token' => $token->getToken(new Sha256(), InMemory::plainText($identity->getSecret()))->toString()
+                'token' => $token->getToken(new Sha256(), InMemory::plainText($secret))->toString()
             ],
             JsonResponse::HTTP_OK
         );
