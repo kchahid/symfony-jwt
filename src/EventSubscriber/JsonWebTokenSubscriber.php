@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
-use App\Contract\IdentityContractTrait;
 use App\JWT\JsonWebTokenAwareInterface;
 use App\JWT\JsonWebTokenAwareTrait;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -20,7 +19,6 @@ use Symfony\Component\HttpKernel\KernelEvents;
 class JsonWebTokenSubscriber implements EventSubscriberInterface, JsonWebTokenAwareInterface
 {
     use JsonWebTokenAwareTrait;
-    use IdentityContractTrait;
 
     public function processRequestJwtMiddleware(RequestEvent $event): void
     {

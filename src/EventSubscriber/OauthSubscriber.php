@@ -7,7 +7,6 @@ namespace App\EventSubscriber;
 use App\Contract\IdentityContractTrait;
 use App\Controller\Oauth\TokenAuthenticatedController;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Cache\CacheItemPoolInterface;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -15,6 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Contracts\Cache\CacheInterface;
 
 use function base64_decode;
 use function explode;
@@ -37,7 +37,7 @@ class OauthSubscriber implements EventSubscriberInterface, LoggerAwareInterface
     private Request $request;
 
     public function __construct(
-        private readonly CacheItemPoolInterface $cache,
+        private readonly CacheInterface $cache,
         private readonly EntityManagerInterface $em
     ) {
     }
@@ -78,7 +78,7 @@ class OauthSubscriber implements EventSubscriberInterface, LoggerAwareInterface
                 throw new AccessDeniedHttpException('basic secret is missing');
             }
 
-            $identity = $this->getIdentity($key, $this->logger, true);
+            $identity = $this->getIdentity($key, $this->em, $this->logger, true);
             if ($secret !== $identity->getBasicSecret()) {
                 throw new AccessDeniedHttpException('basic secret is invalid');
             }

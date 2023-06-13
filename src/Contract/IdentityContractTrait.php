@@ -10,7 +10,6 @@ use App\Exception\JsonWebTokenException;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
-use Symfony\Component\Cache\PruneableInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Contracts\Cache\ItemInterface;
 
@@ -32,7 +31,7 @@ trait IdentityContractTrait
      * Since it's a simple app, no need to set an external cache
      * For more performance, use solution like redis, memcached, couchbase, ...
      */
-    private function getIdentityByIssuer(?string $issuer, LoggerInterface $logger): Identity
+    private function getIdentityByIssuer(?string $issuer, EntityManagerInterface $em, LoggerInterface $logger): Identity
     {
         if (empty($issuer)) {
             $logger->debug(sprintf('Request object is not declared. Did you forget to inject %s', Request::class));
@@ -44,35 +43,29 @@ trait IdentityContractTrait
         }
 
         if (!property_exists($this, 'cache')) {
-            $logger->debug(sprintf('Cache object is not declared. Did you forget to inject %s', PruneableInterface::class));
+            $logger->debug(sprintf('Cache object is not declared. Did you forget to inject %s', FilesystemAdapter::class));
             throw new InternalException('cache property is not declared');
         }
 
-        if (!property_exists($this, 'em')) {
-            $logger->debug(sprintf('Entity manager object is not declared. Did you forget to inject %s', EntityManagerInterface::class));
-            throw new InternalException('em is not declared');
-        }
-
         if (!$this->cache instanceof FilesystemAdapter) {
-            $logger->debug(sprintf('Cache object is not valid. Did you inject %s', PruneableInterface::class));
+            $logger->debug(sprintf('Cache object is not valid. Did you inject %s', FilesystemAdapter::class));
             throw new InternalException(sprintf('Cache is not instance of %s', FilesystemAdapter::class));
         }
-
-        if (!$this->em instanceof EntityManagerInterface) {
-            $logger->debug(sprintf('Entity manager object is not valid. Did you inject %s', EntityManagerInterface::class));
-            throw new InternalException(sprintf('Entity manager is not instance of %s', EntityManagerInterface::class));
-        }
-        return $this->getIdentity($issuer, $logger);
+        return $this->getIdentity($issuer, $em, $logger);
     }
 
-    private function getIdentity(string $identifier, LoggerInterface $logger, bool $forBasic = false): Identity
-    {
-        return $this->cache->get(sprintf('%sIdentity', $identifier), function (ItemInterface $item) use ($forBasic, $identifier, $logger): Identity {
+    private function getIdentity(
+        string $identifier,
+        EntityManagerInterface $em,
+        LoggerInterface $logger,
+        bool $forBasic = false
+    ): Identity {
+        return $this->cache->get(sprintf('%sIdentity', $identifier), function (ItemInterface $item) use ($forBasic, $identifier, $em, $logger): Identity {
             $logger->info('Identity not found in cache. Processing....');
             $item->expiresAfter(604800);
 
-            /** @var Identity $identity */
-            $identity = $this->em->getRepository(Identity::class)
+            /** @var Identity|null $identity */
+            $identity = $em->getRepository(Identity::class)
                 ->findOneBy(match ($forBasic) {
                     true => ['basicKey' => $identifier],
                     default => ['issuer' => $identifier]

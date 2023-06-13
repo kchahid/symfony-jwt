@@ -7,6 +7,7 @@ namespace App\JWT;
 use Carbon\Carbon;
 use DateTimeImmutable;
 use Lcobucci\JWT\Token;
+use Lcobucci\JWT\UnencryptedToken;
 use Lcobucci\JWT\Validation\Constraint;
 use Lcobucci\JWT\Validation\ConstraintViolation;
 
@@ -27,7 +28,7 @@ final readonly class IsExpired implements Constraint
 
     public function assert(Token $token): void
     {
-        /** @var DateTimeImmutable $iat */
+        /** @phpstan-var UnencryptedToken $token */
         $iat = $token->claims()->get('iat', new DateTimeImmutable());
         $now = Carbon::now();
 
