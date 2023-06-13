@@ -77,7 +77,7 @@ A collection postman is provided with the repo. See [Collection](https://github.
 
 A route has also been developed to help generate the JWT.
 
-![oauth token route](https://github.com/kchahid/symfony-jwt/blob/master/doc/schreenshot/oauth_token.png)
+![oauth token route](https://github.com/kchahid/symfony-jwt/blob/master/doc/screenshot/oauth_token.png)
 
 <!-- License -->
 ## License
