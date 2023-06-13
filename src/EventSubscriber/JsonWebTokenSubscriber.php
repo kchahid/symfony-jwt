@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
+use App\Contract\IdentityContractTrait;
 use App\JWT\JsonWebTokenAwareInterface;
 use App\JWT\JsonWebTokenAwareTrait;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -19,6 +20,16 @@ use Symfony\Component\HttpKernel\KernelEvents;
 class JsonWebTokenSubscriber implements EventSubscriberInterface, JsonWebTokenAwareInterface
 {
     use JsonWebTokenAwareTrait;
+    use IdentityContractTrait;
+
+    public function processRequestJwtMiddleware(RequestEvent $event): void
+    {
+        // ignore oauth endpoint
+        if ($event->getRequest()->getPathInfo() === '/oauth/token') {
+            return;
+        }
+        $this->jsonWebToken->process($event);
+    }
 
     /**
      * @return array <mixed>
@@ -30,10 +41,5 @@ class JsonWebTokenSubscriber implements EventSubscriberInterface, JsonWebTokenAw
                 ['processRequestJwtMiddleware', 249]
             ]
         ];
-    }
-
-    public function processRequestJwtMiddleware(RequestEvent $event): void
-    {
-        $this->jsonWebToken->process($event);
     }
 }

@@ -62,15 +62,24 @@ trait IdentityContractTrait
             $logger->debug(sprintf('Entity manager object is not valid. Did you inject %s', EntityManagerInterface::class));
             throw new InternalException(sprintf('Entity manager is not instance of %s', EntityManagerInterface::class));
         }
-        return $this->cache->get(sprintf('%sIdentity', $issuer), function (ItemInterface $item) use ($issuer, $logger): Identity {
+        return $this->getIdentity($issuer, $logger);
+    }
+
+    private function getIdentity(string $identifier, LoggerInterface $logger, bool $forBasic = false): Identity
+    {
+        return $this->cache->get(sprintf('%sIdentity', $identifier), function (ItemInterface $item) use ($forBasic, $identifier, $logger): Identity {
             $logger->info('Identity not found in cache. Processing....');
             $item->expiresAfter(604800);
 
             /** @var Identity $identity */
-            $identity = $this->em->getRepository(Identity::class)->findOneBy(['issuer' => $issuer]);
+            $identity = $this->em->getRepository(Identity::class)
+                ->findOneBy(match ($forBasic) {
+                    true => ['basicKey' => $identifier],
+                    default => ['issuer' => $identifier]
+                });
 
             if ($identity === null) {
-                $logger->error('Cannot get identity from database.');
+                $logger->notice('Cannot get identity from database.');
                 throw new InternalException('Cannot fetch identity from database');
             }
 
