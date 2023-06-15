@@ -1,0 +1,37 @@
+name: code style
+
+on: [push]
+
+jobs:
+
+  start:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup PHP Action
+        uses: shivammathur/setup-php@2.25.4
+        with:
+          php-version: '8.2'
+          tools: composer, phpstan, phpcs
+
+      - name: Get composer cache directory
+        id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        run: composer install
+
+      - name: Run PHPStan
+        run: phpstan analyse src -c phpstan.neon
+
+      - name: Run PHP CS
+        run: php /home/runner/work/symfony-jwt/symfony-jwt/vendor/bin/phpcs --standard=ruleset.xml --extensions=php -p src
