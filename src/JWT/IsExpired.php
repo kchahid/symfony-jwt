@@ -17,12 +17,12 @@ use Lcobucci\JWT\Validation\ConstraintViolation;
  *
  * @author Kamal Chahid <kchahid_@outlook.com>
  */
-final readonly class IsExpired implements Constraint
+final class IsExpired implements Constraint
 {
     public function __construct(
-        private int $duration,
-        private ?DateTimeImmutable $exp = null,
-        private ?DateTimeImmutable $nbf = null
+        private readonly int $duration,
+        private readonly ?DateTimeImmutable $exp = null,
+        private readonly ?DateTimeImmutable $nbf = null
     ) {
     }
 
