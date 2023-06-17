@@ -31,10 +31,14 @@
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.4",
         "phpstan/phpstan": "1.10",
+        "phpunit/phpunit": "^9.5",
         "roave/security-advisories": "dev-latest",
         "slevomat/coding-standard": "8.0",
         "squizlabs/php_codesniffer": "3.7",
-        "symfony/maker-bundle": "^1.49"
+        "symfony/browser-kit": "6.3.*",
+        "symfony/css-selector": "6.3.*",
+        "symfony/maker-bundle": "^1.49",
+        "symfony/phpunit-bridge": "^6.3"
     },
     "config": {
         "allow-plugins": {
