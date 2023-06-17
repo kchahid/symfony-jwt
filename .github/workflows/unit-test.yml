@@ -45,9 +45,6 @@ jobs:
       - name: Install dependencies
         run: composer install
 
-      - name: Check Symfony requirements
-        run: vendor/bin/requirements-checker
-
       - name: Run php unit
         run: phpunit tests
 
