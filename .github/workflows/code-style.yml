@@ -33,5 +33,7 @@ jobs:
         run: php /home/runner/work/symfony-jwt/symfony-jwt/vendor/bin/phpcs --standard=ruleset.xml --extensions=php -p src
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: ./coverage.xml
+          verbose: true
