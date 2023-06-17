@@ -2,7 +2,7 @@ name: unit test
 
 on: ['push']
 jobs:
-  style:
+  unit-test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
