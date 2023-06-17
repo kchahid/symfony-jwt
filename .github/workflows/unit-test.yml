@@ -1,6 +1,10 @@
 name: unit test
 
-on: ['push']
+on:
+  pull_request:
+    branches:
+      - 'release'
+      - 'develop'
 jobs:
   unit-test:
     runs-on: ubuntu-latest
@@ -24,4 +28,4 @@ jobs:
       - name: Install dependencies
         run: composer install
       - name: Run php unit
-        run: phpunit tests/
+        run: phpunit tests
