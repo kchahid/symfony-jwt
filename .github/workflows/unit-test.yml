@@ -52,6 +52,6 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: /home/runner/coverage.xml
+          files: ./coverage.xml
           flags: tests
           verbose: true
