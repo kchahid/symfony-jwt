@@ -24,4 +24,4 @@ jobs:
       - name: Install dependencies
         run: composer install
       - name: Run php unit
-        run: php /home/runner/work/symfony-jwt/symfony-jwt/bin/phpunit
+        run: phpunit tests/
