@@ -46,7 +46,7 @@ jobs:
         run: composer install
 
       - name: Run php unit
-        run: phpunit tests
+        run: phpunit tests --coverage-clover=coverage.xml
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
