@@ -7,14 +7,13 @@ namespace App\Tests;
 use App\Controller\Oauth\OauthTokenController;
 use App\Entity\Identity;
 use App\Exception\InternalException;
-use Carbon\Carbon;
+use App\Tests\Helper\Utils;
 use Lcobucci\JWT\Signer\InvalidKeyProvided;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use TypeError;
 
 use function json_decode;
-use function md5;
 
 /**
  * Class OauthTokenTest
@@ -31,15 +30,7 @@ class OauthTokenTest extends TestCase
         $this->oauth = new OauthTokenController();
         $this->request = new Request();
 
-        $this->identity = (new Identity())
-            ->setBasicSecret('lorem ipsum')
-            ->setBasicKey('lorem ipsum')
-            ->setStatus(true)
-            ->setIssuer('lorem ipsum')
-            ->setAllowedEnv(['lorem ipsum'])
-            ->setCreatedAt(new Carbon())
-            ->setSecret(md5('lorem ipsum'))
-        ;
+        $this->identity = Utils::getCorrectIdentityData();
 
         $this->request->server->set('HTTP_HOST', 'lorem ipsum');
 
