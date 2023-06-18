@@ -19,10 +19,18 @@ use function md5;
  */
 final class JsonWebTokenTestHelper
 {
+    /**
+     * @return non-empty-string
+     */
+    private static function getSecret(): string
+    {
+        return md5('lorem ipsum');
+    }
+
     public static function getValidJWT(bool $asObject = false): string|Token
     {
         return self::jsonWebToken(
-            Configuration::forSymmetricSigner(new Sha256(), InMemory::plainText(self::secret()))
+            Configuration::forSymmetricSigner(new Sha256(), InMemory::plainText(self::getSecret()))
                 ->builder()
                 ->withHeader('alg', 'HS256')
                 ->withHeader('typ', 'JWT')
@@ -36,7 +44,7 @@ final class JsonWebTokenTestHelper
     public static function getExpiredJWT(bool $asObject = false): string|Token
     {
         return self::jsonWebToken(
-            Configuration::forSymmetricSigner(new Sha256(), InMemory::plainText(self::secret()))
+            Configuration::forSymmetricSigner(new Sha256(), InMemory::plainText(self::getSecret()))
                 ->builder()
                 ->withHeader('alg', 'HS256')
                 ->withHeader('typ', 'JWT')
@@ -50,7 +58,7 @@ final class JsonWebTokenTestHelper
     public static function getJWTWithoutSubject(bool $asObject = false): string|Token
     {
         return self::jsonWebToken(
-            Configuration::forSymmetricSigner(new Sha256(), InMemory::plainText(self::secret()))
+            Configuration::forSymmetricSigner(new Sha256(), InMemory::plainText(self::getSecret()))
                 ->builder()
                 ->withHeader('alg', 'HS256')
                 ->withHeader('typ', 'JWT')
@@ -63,13 +71,8 @@ final class JsonWebTokenTestHelper
     private static function jsonWebToken(Builder $builder, bool $asObject = false): string|Token
     {
         return match ($asObject) {
-            true => $builder->getToken(new Sha256(), InMemory::plainText(self::secret())),
-            default => $builder->getToken(new Sha256(), InMemory::plainText(self::secret()))->toString()
+            true => $builder->getToken(new Sha256(), InMemory::plainText(self::getSecret())),
+            default => $builder->getToken(new Sha256(), InMemory::plainText(self::getSecret()))->toString()
         };
-    }
-
-    private static function secret(): string
-    {
-        return md5('lorem ipsum');
     }
 }
