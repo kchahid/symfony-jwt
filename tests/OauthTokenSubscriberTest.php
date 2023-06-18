@@ -15,6 +15,7 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
  * Class OauthTokenSubscriberTest
@@ -47,12 +48,10 @@ class OauthTokenSubscriberTest extends TestCase
             ->getMock();
 
         $this->controllerEvent
-            ->expects(self::atLeastOnce())
             ->method('getRequest')
             ->willReturn(new Request());
 
         $this->controllerEvent
-            ->expects(self::once())
             ->method('getController')
             ->willReturn($callable);
 
@@ -193,5 +192,14 @@ class OauthTokenSubscriberTest extends TestCase
         $this->oauthSubscriber->onKernelController($this->controllerEvent);
 
         self::assertTrue(true);
+    }
+
+    public function testSuccessSubscribedEvent(): void
+    {
+        $result = $this->oauthSubscriber::getSubscribedEvents();
+
+        self::assertArrayHasKey(KernelEvents::CONTROLLER, $result);
+        self::assertEquals('onKernelController', $result[KernelEvents::CONTROLLER]);
+        self::assertCount(1, $result);
     }
 }
