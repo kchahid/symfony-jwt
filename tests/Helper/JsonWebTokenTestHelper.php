@@ -41,6 +41,21 @@ final class JsonWebTokenTestHelper
         );
     }
 
+    public static function getValidJWTWithJTI(bool $asObject = false): string|Token
+    {
+        return self::jsonWebToken(
+            Configuration::forSymmetricSigner(new Sha256(), InMemory::plainText(self::getSecret()))
+                ->builder()
+                ->withHeader('alg', 'HS256')
+                ->withHeader('typ', 'JWT')
+                ->issuedBy('lorem ipsum')
+                ->issuedAt(new DateTimeImmutable())
+                ->relatedTo('lorem ipsum')
+                ->identifiedBy('lorem ipsum'),
+            $asObject
+        );
+    }
+
     public static function getExpiredJWT(bool $asObject = false): string|Token
     {
         return self::jsonWebToken(
