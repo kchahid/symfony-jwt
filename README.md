@@ -9,6 +9,7 @@
 ![GitHub issues](https://img.shields.io/github/issues/kchahid/symfony-docker)
 [![PHPStan](https://img.shields.io/badge/PHPStan-Level%207-brightgreen.svg?style=flat&logo=php)](https://shields.io/#/)
 ![code style action](https://github.com/kchahid/symfony-jwt/actions/workflows/code-style.yml/badge.svg)
+![unit Test](https://github.com/kchahid/symfony-jwt/actions/workflows/unit-test.yml/badge.svg)
 [![codecov](https://codecov.io/github/kchahid/symfony-jwt/branch/develop/graph/badge.svg?token=ACWUWG4BAF)](https://codecov.io/github/kchahid/symfony-jwt)
 
 <!-- Table of Contents -->
