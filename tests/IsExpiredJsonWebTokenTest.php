@@ -5,16 +5,11 @@ declare(strict_types=1);
 namespace App\Tests;
 
 use App\JWT\IsExpired;
+use App\Tests\Helper\JsonWebTokenTestHelper;
 use DateTimeImmutable;
-use Lcobucci\JWT\Builder;
-use Lcobucci\JWT\Configuration;
-use Lcobucci\JWT\Signer\Hmac\Sha256;
-use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Validation\ConstraintViolation;
 use PHPUnit\Framework\TestCase;
-
-use function md5;
 
 /**
  * Class IsExpiredJsonWebTokenTest
@@ -24,31 +19,20 @@ class IsExpiredJsonWebTokenTest extends TestCase
 {
     private const DURATION = 3600;
 
-    private string $secret;
-    private Configuration $configuration;
     private IsExpired $isExpired;
 
     public function setUp(): void
     {
-        $this->secret = md5('lorem ipsum');
         $this->isExpired = new IsExpired(self::DURATION);
-        $this->configuration = Configuration::forSymmetricSigner(new Sha256(), InMemory::plainText($this->secret));
 
         parent::setUp();
     }
 
     public function testSuccessIssuedAtTime(): void
     {
-        $this->isExpired->assert(
-            $this->getToken(
-                $this->configuration->builder()
-                    ->withHeader('alg', 'HS256')
-                    ->withHeader('typ', 'JWT')
-                    ->issuedBy('lorem upsum')
-                    ->issuedAt(new DateTimeImmutable())
-                    ->relatedTo('lorem ipsum')
-            )
-        );
+        /** @var Token $token */
+        $token = JsonWebTokenTestHelper::getValidJWT(true);
+        $this->isExpired->assert($token);
 
         static::assertTrue(true);
     }
@@ -57,20 +41,28 @@ class IsExpiredJsonWebTokenTest extends TestCase
     {
         $this->expectException(ConstraintViolation::class);
 
-        $this->isExpired->assert(
-            $this->getToken(
-                $this->configuration->builder()
-                    ->withHeader('alg', 'HS256')
-                    ->withHeader('typ', 'JWT')
-                    ->issuedBy('lorem upsum')
-                    ->issuedAt((new DateTimeImmutable())->modify('-1 day'))
-                    ->relatedTo('lorem ipsum')
-            )
-        );
+        /** @var Token $token */
+        $token = JsonWebTokenTestHelper::getExpiredJWT(true);
+        $this->isExpired->assert($token);
     }
 
-    private function getToken(Builder $builder): Token
+    public function testJsonWebTokenIsNotValidYet(): void
     {
-        return $builder->getToken(new Sha256(), InMemory::plainText($this->secret));
+        $this->expectException(ConstraintViolation::class);
+
+        $this->isExpired = new IsExpired(self::DURATION, null, (new DateTimeImmutable())->modify('+1 day'));
+        /** @var Token $token */
+        $token = JsonWebTokenTestHelper::getValidJWT(true);
+        $this->isExpired->assert($token);
+    }
+
+    public function testJsonWebTokenExpiredBeforDuration(): void
+    {
+        $this->expectException(ConstraintViolation::class);
+
+        $this->isExpired = new IsExpired(self::DURATION, (new DateTimeImmutable())->modify('-30 minute'));
+        /** @var Token $token */
+        $token = JsonWebTokenTestHelper::getValidJWT(true);
+        $this->isExpired->assert($token);
     }
 }

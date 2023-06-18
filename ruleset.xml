@@ -2,6 +2,7 @@
 <ruleset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="./vendor/squizlabs/php_codesniffer/phpcs.xsd">
     <config name="installed_paths" value="vendor/slevomat/coding-standard/"/>
     <exclude-pattern>vendor/*</exclude-pattern>
+    <exclude-pattern>tests/bootstrap.php</exclude-pattern>
     <arg name="extensions" value="php" />
 
     <description>coding standard</description>

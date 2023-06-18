@@ -5,9 +5,7 @@ on:
     branches:
       - 'release'
       - 'develop'
-  push:
-    branches:
-      - 'develop'
+
 jobs:
   php-unit-test:
     runs-on: ubuntu-latest
