@@ -29,6 +29,7 @@
         "symfony/yaml": "6.3.*"
     },
     "require-dev": {
+        "dg/bypass-finals": "^1.4",
         "doctrine/doctrine-fixtures-bundle": "^3.4",
         "phpstan/phpstan": "1.10",
         "phpunit/phpunit": "^9.5",
