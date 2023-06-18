@@ -16,10 +16,10 @@ use TypeError;
 use function json_decode;
 
 /**
- * Class OauthTokenTest
+ * Class OauthTokenControllerTest
  * @package App\Tests
  */
-class OauthTokenTest extends TestCase
+class OauthTokenControllerTest extends TestCase
 {
     private OauthTokenController $oauth;
     private Request $request;
