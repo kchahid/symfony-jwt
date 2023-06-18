@@ -15,6 +15,7 @@ use Symfony\Component\HttpKernel\Event\ControllerEvent;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Contracts\Cache\CacheInterface;
+use Throwable;
 
 use function base64_decode;
 use function explode;
@@ -66,23 +67,28 @@ class OauthSubscriber implements EventSubscriberInterface, LoggerAwareInterface
                 throw new AccessDeniedHttpException('Data form is invalid', null, 3);
             }
 
-            $basicToken = $event->getRequest()->headers->get('authorization');
+            $basicToken = $event->getRequest()->headers->get('Authorization');
             if (($token = base64_decode(substr($basicToken, 6), true)) === false) {
                 throw new AccessDeniedHttpException('Authorization header is invalid', null, 4);
             }
 
-            [$key, $secret] = explode(':', $token);
-            if (!is_string($key)) {
-                throw new AccessDeniedHttpException('Basic key is missing', null, 5);
+            try {
+                [$key, $secret] = explode(':', $token);
+            } catch (Throwable $exception) {
+                $this->logger->notice(sprintf('Basic token is invalid. End with Error %s', $exception->getMessage()));
             }
 
-            if (!is_string($secret)) {
-                throw new AccessDeniedHttpException('Basic secret is missing', null, 6);
+            if (!isset($key) || !is_string($key)) {
+                throw new AccessDeniedHttpException('Basic key is missing', null, 6);
+            }
+
+            if (!isset($secret) || !is_string($secret)) {
+                throw new AccessDeniedHttpException('Basic secret is missing', null, 7);
             }
 
             $identity = $this->getIdentity($key, $this->em, $this->logger, true);
             if ($secret !== $identity->getBasicSecret()) {
-                throw new AccessDeniedHttpException('Basic secret is invalid', null, 7);
+                throw new AccessDeniedHttpException('Basic secret is invalid', null, 8);
             }
 
             $this->logger->info(sprintf('Identity verified (%s)', $identity->getIssuer()));
