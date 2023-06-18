@@ -44,7 +44,7 @@ jobs:
         run: composer install
 
       - name: Run php unit
-        run: php /home/runner/work/symfony-jwt/symfony-jwt/bin/phpunit tests/ --coverage-clover=coverage.xml #phpunit tests --coverage-clover=coverage.xml
+        run: phpunit tests --coverage-clover=coverage.xml
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
