@@ -21,7 +21,7 @@ jobs:
         uses: shivammathur/setup-php@2.25.4
         with:
           php-version: ${{ matrix.php-versions }}
-          tools: composer, phpunit
+          tools: composer, phpunit:9.5
 
       - name: Check PHP Version
         run: php -v

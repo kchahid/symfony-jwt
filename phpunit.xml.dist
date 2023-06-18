@@ -39,4 +39,7 @@
         <extension class="Symfony\Component\Panther\ServerExtension" />
     </extensions>
     -->
+    <extensions>
+        <extension class="App\Tests\Hook\ByPassFinalClassHook" />
+    </extensions>
 </phpunit>
