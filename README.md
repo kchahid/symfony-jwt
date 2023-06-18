@@ -3,14 +3,15 @@
 </div>
 
 <!-- Badges -->
-![GitHub contributors](https://img.shields.io/github/contributors/kchahid/symfony-docker)
-![License](https://img.shields.io/badge/license-MIT-blue)
-![GitHub last commit](https://img.shields.io/github/last-commit/kchahid/symfony-docker)
-![GitHub issues](https://img.shields.io/github/issues/kchahid/symfony-docker)
-[![PHPStan](https://img.shields.io/badge/PHPStan-Level%207-brightgreen.svg?style=flat&logo=php)](https://shields.io/#/)
-![code style action](https://github.com/kchahid/symfony-jwt/actions/workflows/code-style.yml/badge.svg)
-![unit Test](https://github.com/kchahid/symfony-jwt/actions/workflows/unit-test.yml/badge.svg)
-[![codecov](https://codecov.io/github/kchahid/symfony-jwt/branch/develop/graph/badge.svg?token=ACWUWG4BAF)](https://codecov.io/github/kchahid/symfony-jwt)
+<div align="center">
+  <img src="https://img.shields.io/badge/license-MIT-blue" alt="License" />
+  <img src="https://img.shields.io/github/last-commit/kchahid/symfony-docker" alt="GitHub last commit" />
+  <img src="https://img.shields.io/github/issues/kchahid/symfony-docker" alt="GitHub issues" />
+  <img src="https://img.shields.io/badge/PHPStan-Level%207-brightgreen.svg?style=flat&logo=php" alt="PHPStan" />
+  <img src="https://codecov.io/github/kchahid/symfony-jwt/branch/develop/graph/badge.svg?token=ACWUWG4BAF)" alt="codecov" />
+  <img src="https://github.com/kchahid/symfony-jwt/actions/workflows/code-style.yml/badge.svg" alt="code style action" />
+  <img src="https://github.com/kchahid/symfony-jwt/actions/workflows/unit-test.yml/badge.svg" alt="unit Test" />
+</div>
 
 <!-- Table of Contents -->
 # Table of Contents
