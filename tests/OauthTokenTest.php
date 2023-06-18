@@ -41,9 +41,12 @@ class OauthTokenTest extends TestCase
     {
         $this->request->attributes->set('identity', $this->identity);
         $response = $this->oauth->index($this->request);
-        $data = json_decode($response->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
-        self::assertJson($response->getContent());
+        /** @phpstan-var  string $responseData */
+        $responseData = $response->getContent();
+        $data = json_decode($responseData, true, 512, JSON_THROW_ON_ERROR);
+
+        self::assertJson($responseData);
 
         self::assertArrayHasKey('code', $data);
         self::assertArrayHasKey('type', $data);

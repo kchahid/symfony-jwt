@@ -7,6 +7,7 @@ namespace App\Tests;
 use App\JWT\IsExpired;
 use App\Tests\Helper\JsonWebTokenTestHelper;
 use DateTimeImmutable;
+use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Validation\ConstraintViolation;
 use PHPUnit\Framework\TestCase;
 
@@ -29,7 +30,9 @@ class IsExpiredJsonWebTokenTest extends TestCase
 
     public function testSuccessIssuedAtTime(): void
     {
-        $this->isExpired->assert(JsonWebTokenTestHelper::getValidJWT(true));
+        /** @var Token $token */
+        $token = JsonWebTokenTestHelper::getValidJWT(true);
+        $this->isExpired->assert($token);
 
         static::assertTrue(true);
     }
@@ -38,7 +41,9 @@ class IsExpiredJsonWebTokenTest extends TestCase
     {
         $this->expectException(ConstraintViolation::class);
 
-        $this->isExpired->assert(JsonWebTokenTestHelper::getExpiredJWT(true));
+        /** @var Token $token */
+        $token = JsonWebTokenTestHelper::getExpiredJWT(true);
+        $this->isExpired->assert($token);
     }
 
     public function testJsonWebTokenIsNotValidYet(): void
@@ -46,7 +51,9 @@ class IsExpiredJsonWebTokenTest extends TestCase
         $this->expectException(ConstraintViolation::class);
 
         $this->isExpired = new IsExpired(self::DURATION, null, (new DateTimeImmutable())->modify('+1 day'));
-        $this->isExpired->assert(JsonWebTokenTestHelper::getValidJWT(true));
+        /** @var Token $token */
+        $token = JsonWebTokenTestHelper::getValidJWT(true);
+        $this->isExpired->assert($token);
     }
 
     public function testJsonWebTokenExpiredBeforDuration(): void
@@ -54,6 +61,8 @@ class IsExpiredJsonWebTokenTest extends TestCase
         $this->expectException(ConstraintViolation::class);
 
         $this->isExpired = new IsExpired(self::DURATION, (new DateTimeImmutable())->modify('-30 minute'));
-        $this->isExpired->assert(JsonWebTokenTestHelper::getValidJWT(true));
+        /** @var Token $token */
+        $token = JsonWebTokenTestHelper::getValidJWT(true);
+        $this->isExpired->assert($token);
     }
 }

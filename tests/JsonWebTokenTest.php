@@ -39,6 +39,7 @@ class JsonWebTokenTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $this->request = new RequestEvent($httpKernel, new Request(), null);
+        $this->request->getRequest()->server->set('HTTP_HOST', 'lorem ipsum');
     }
 
     public function testMissingAuthorizationHeader(): void
@@ -74,8 +75,10 @@ class JsonWebTokenTest extends TestCase
     {
         $this->expectException(JsonWebTokenException::class);
 
-        $this->request->getRequest()->headers->set('Authorization', sprintf('Bearer %s', JsonWebTokenTestHelper::getJWTWithoutSubject()));
-        $this->request->getRequest()->server->set('HTTP_HOST', 'lorem ipsum');
+        /** @phpstan-var string $tokenAsString */
+        $tokenAsString = JsonWebTokenTestHelper::getJWTWithoutSubject();
+        $this->request->getRequest()->headers->set('Authorization', sprintf('Bearer %s', $tokenAsString));
+
         try {
             $this->jsonWebToken->process($this->request);
         } catch (JsonWebTokenException $exception) {
@@ -107,8 +110,9 @@ class JsonWebTokenTest extends TestCase
         $cache->method('get')
             ->willReturn($identity);
 
-        $this->request->getRequest()->headers->set('Authorization', sprintf('Bearer %s', JsonWebTokenTestHelper::getValidJWT()));
-        $this->request->getRequest()->server->set('HTTP_HOST', 'lorem ipsum');
+        /** @phpstan-var string $tokenAsString */
+        $tokenAsString = JsonWebTokenTestHelper::getValidJWT();
+        $this->request->getRequest()->headers->set('Authorization', sprintf('Bearer %s', $tokenAsString));
 
         try {
             $this->buildJsonWebTokenClass($objectManager, $cache);
@@ -142,8 +146,9 @@ class JsonWebTokenTest extends TestCase
         $cache->method('get')
             ->willReturn($identity);
 
-        $this->request->getRequest()->headers->set('Authorization', sprintf('Bearer %s', JsonWebTokenTestHelper::getExpiredJWT()));
-        $this->request->getRequest()->server->set('HTTP_HOST', 'lorem ipsum');
+        /** @phpstan-var string $tokenAsString */
+        $tokenAsString = JsonWebTokenTestHelper::getExpiredJWT();
+        $this->request->getRequest()->headers->set('Authorization', sprintf('Bearer %s', $tokenAsString));
 
         try {
             $this->buildJsonWebTokenClass($objectManager, $cache);
@@ -170,6 +175,10 @@ class JsonWebTokenTest extends TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        /**
+         * @phpstan-var MockObject&EntityManagerInterface $em
+         * @phpstan-var MockObject&FilesystemAdapter $cache
+         */
         $this->jsonWebToken = new JsonWebToken($em, $cache, self::DURATION);
         $this->jsonWebToken->setLogger($logger);
     }
