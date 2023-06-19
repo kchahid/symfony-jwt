@@ -40,6 +40,7 @@ class JsonWebTokenTest extends TestCase
             ->getMock();
         $this->request = new RequestEvent($httpKernel, new Request(), null);
         $this->request->getRequest()->server->set('HTTP_HOST', 'lorem ipsum');
+        $this->request->getRequest()->server->set('APP_ENV', 'lorem ipsum');
     }
 
     public function testMissingAuthorizationHeader(): void

@@ -30,6 +30,9 @@ class OauthTokenSubscriberTest extends TestCase
     {
         $identity = Utils::getCorrectIdentityData();
 
+        $request = new Request();
+        $request->server->set('APP_ENV', 'lorem ipsum');
+
         // mock cache
         $cache = $this->createMock(FilesystemAdapter::class);
         $cache
@@ -49,7 +52,7 @@ class OauthTokenSubscriberTest extends TestCase
 
         $this->controllerEvent
             ->method('getRequest')
-            ->willReturn(new Request());
+            ->willReturn($request);
 
         $this->controllerEvent
             ->method('getController')

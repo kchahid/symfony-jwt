@@ -60,7 +60,8 @@ trait IdentityContractTrait
         LoggerInterface $logger,
         bool $forBasic = false
     ): Identity {
-        return $this->cache->get(sprintf('%sIdentity', $identifier), function (ItemInterface $item) use ($forBasic, $identifier, $em, $logger): Identity {
+        /** @var null|Identity $identity */
+        $identity =  $this->cache->get(sprintf('%sIdentity', $identifier), function (ItemInterface $item) use ($forBasic, $identifier, $em, $logger): ?Identity {
             $logger->info('Identity not found in cache. Processing....');
             $item->expiresAfter(604800);
 
@@ -71,23 +72,24 @@ trait IdentityContractTrait
                     default => ['issuer' => $identifier]
                 });
 
-            if ($identity === null) {
-                $logger->notice('Cannot get identity from database.');
-                throw new InternalException('Cannot fetch identity from database');
-            }
-
-            if ($identity->getStatus() === false) {
-                $logger->info('Identity is not authorized to perform the action.');
-                throw new InternalException('Identity is disabled');
-            }
-
-            $env = $this->request->server->get('APP_ENV');
-            if (in_array($env, $identity->getAllowedEnv(), true) === false) {
-                $logger->debug(sprintf('Identity is not authorized to perform the action in %s', $env));
-                throw new JsonWebTokenException(JsonWebTokenException::SUBJECT);
-            }
             $logger->info('Identity was fetch from database and cached');
             return $identity;
         }, 1.0);
+
+        if ($identity === null) {
+            $logger->notice('Cannot get identity from database.');
+            throw new InternalException('Cannot fetch identity from database');
+        }
+
+        if ($identity->getStatus() === false) {
+            $logger->info('Identity is not authorized to perform the action.');
+            throw new InternalException('Identity is disabled');
+        }
+        $env = $this->request->server->get('APP_ENV');
+        if (in_array($env, $identity->getAllowedEnv(), true) === false) {
+            $logger->debug(sprintf('Identity is not authorized to perform the action in %s', $env));
+            throw new JsonWebTokenException(JsonWebTokenException::SUBJECT);
+        }
+        return $identity;
     }
 }
